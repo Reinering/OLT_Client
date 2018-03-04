@@ -237,14 +237,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.horizontalLayout_count += 1
             self.on_pushButton_service_num += 1
 
+    #改变OLT登录默认值
+    @pyqtSlot(str)
+    def on_comboBox_OLTFactory_currentTextChanged(self, p0):
+        print(p0)
+        if p0 == "FiberHome":
+            self.lineEdit_IPAddr.setText("10.11.104.6")
+            self.lineEdit_oltUser.setText("GEPON")
+            self.lineEdit_oltPasswd.setText("GEPON")
+        elif p0 == "HuaWei":
+            self.lineEdit_IPAddr.setText("10.11.104.2")
+            self.lineEdit_oltUser.setText("huawei")
+            self.lineEdit_oltPasswd.setText("huawei28")
+        elif p0 == "ZTE":
+            self.lineEdit_IPAddr.setText("10.11.104.4")
+            self.lineEdit_oltUser.setText("zte")
+            self.lineEdit_oltPasswd.setText("zte")
+        elif p0 == "Bell":
+            self.lineEdit_IPAddr.setText("")
+            self.lineEdit_oltUser.setText("")
+            self.lineEdit_oltPasswd.setText("")
+        else:
+            self.lineEdit_IPAddr.setText("")
+            self.lineEdit_oltUser.setText("")
+            self.lineEdit_oltPasswd.setText("")
+
     #点击登录OLT按钮
     @pyqtSlot()
     def on_pushButton_login_clicked(self):
         print("登录OLT")
-        self.oltInst.loginOLT(self.comboBox_OLTFactory.currentText(),
+        self.textBrowser.append(self.oltInst.loginOLT(self.comboBox_OLTFactory.currentText(),
                       self.comboBox_OLTType.currentText(),
                       self.comboBox_loginMethod.currentText(),
-                      self.lineEdit_IPAddr.text())
+                      self.lineEdit_IPAddr.text()))
+
 
     #点击退出OLT按钮
     @pyqtSlot()
@@ -265,6 +291,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def on_pushButton_unreg_clicked(self):
         self.oltInst.unRegONU()
+
+    @pyqtSlot()
+    def on_pushButton_addService_clicked(self):
+        self.oltInst.addService()
 
 
 import sys

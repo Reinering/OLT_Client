@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-6.0.dtd">
 <!-- eric project file for project OLT -->
-<!-- Saved: 2018-03-04, 19:39:47 -->
+<!-- Saved: 2018-03-04, 23:53:00 -->
 <!-- Copyright (C) 2018 Reiner,  -->
 <Project version="6.0">
   <Language>en_US</Language>
@@ -14,6 +14,7 @@
   <Eol index="0"/>
   <Sources>
     <Source>OLTv1_1.py</Source>
+    <Source>OLTv1_2.py</Source>
     <Source>Ui_OLT.py</Source>
     <Source>Ui_OLTv1_1.py</Source>
     <Source>Ui_OLTv1_2.py</Source>

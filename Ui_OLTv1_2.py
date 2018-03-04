@@ -42,6 +42,8 @@ class Ui_MainWindow(object):
         self.comboBox_OLTFactory.setFont(font)
         self.comboBox_OLTFactory.setObjectName("comboBox_OLTFactory")
         self.comboBox_OLTFactory.addItem("")
+        self.comboBox_OLTFactory.setItemText(0, "")
+        self.comboBox_OLTFactory.addItem("")
         self.comboBox_OLTFactory.addItem("")
         self.comboBox_OLTFactory.addItem("")
         self.comboBox_OLTFactory.addItem("")
@@ -63,6 +65,7 @@ class Ui_MainWindow(object):
         font.setFamily("微软雅黑")
         font.setPointSize(12)
         self.lineEdit_IPAddr.setFont(font)
+        self.lineEdit_IPAddr.setText("")
         self.lineEdit_IPAddr.setObjectName("lineEdit_IPAddr")
         self.horizontalLayout_4.addWidget(self.lineEdit_IPAddr)
         spacerItem1 = QtWidgets.QSpacerItem(85, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -129,6 +132,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.label_8)
         self.lineEdit_oltUser = QtWidgets.QLineEdit(self.centralWidget)
         self.lineEdit_oltUser.setMinimumSize(QtCore.QSize(0, 27))
+        self.lineEdit_oltUser.setEchoMode(QtWidgets.QLineEdit.Password)
         self.lineEdit_oltUser.setObjectName("lineEdit_oltUser")
         self.horizontalLayout.addWidget(self.lineEdit_oltUser)
         self.label_9 = QtWidgets.QLabel(self.centralWidget)
@@ -140,6 +144,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.label_9)
         self.lineEdit_oltPasswd = QtWidgets.QLineEdit(self.centralWidget)
         self.lineEdit_oltPasswd.setMinimumSize(QtCore.QSize(0, 27))
+        self.lineEdit_oltPasswd.setEchoMode(QtWidgets.QLineEdit.Password)
         self.lineEdit_oltPasswd.setObjectName("lineEdit_oltPasswd")
         self.horizontalLayout.addWidget(self.lineEdit_oltPasswd)
         self.verticalLayout_5.addLayout(self.horizontalLayout)
@@ -401,11 +406,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_7.addWidget(self.textBrowser)
         self.horizontalLayout_11.addLayout(self.verticalLayout_7)
         self.gridLayout_2.addLayout(self.horizontalLayout_11, 0, 0, 1, 1)
-        self.label_8.raise_()
-        self.label_9.raise_()
-        self.lineEdit_oltUser.raise_()
-        self.lineEdit_oltPasswd.raise_()
-        self.lineEdit_oltPasswd.raise_()
         MainWindow.setCentralWidget(self.centralWidget)
 
         self.retranslateUi(MainWindow)
@@ -415,12 +415,11 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "OLT厂家："))
-        self.comboBox_OLTFactory.setItemText(0, _translate("MainWindow", "Firehome"))
-        self.comboBox_OLTFactory.setItemText(1, _translate("MainWindow", "HuaWei"))
-        self.comboBox_OLTFactory.setItemText(2, _translate("MainWindow", "ZTE"))
-        self.comboBox_OLTFactory.setItemText(3, _translate("MainWindow", "Bell"))
+        self.comboBox_OLTFactory.setItemText(1, _translate("MainWindow", "FiberHome"))
+        self.comboBox_OLTFactory.setItemText(2, _translate("MainWindow", "HuaWei"))
+        self.comboBox_OLTFactory.setItemText(3, _translate("MainWindow", "ZTE"))
+        self.comboBox_OLTFactory.setItemText(4, _translate("MainWindow", "Bell"))
         self.label_3.setText(_translate("MainWindow", "IP："))
-        self.lineEdit_IPAddr.setText(_translate("MainWindow", "255.255.255.255"))
         self.label_2.setText(_translate("MainWindow", "OLT类型"))
         self.comboBox_OLTType.setItemText(0, _translate("MainWindow", "GPON"))
         self.comboBox_OLTType.setItemText(1, _translate("MainWindow", "EPON"))
@@ -474,7 +473,7 @@ class Ui_MainWindow(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">refsafd </p></body></html>"))
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
 
 
 if __name__ == "__main__":
