@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-6.0.dtd">
 <!-- eric project file for project OLT -->
-<!-- Saved: 2018-02-28, 23:48:24 -->
+<!-- Saved: 2018-03-04, 19:39:47 -->
 <!-- Copyright (C) 2018 Reiner,  -->
 <Project version="6.0">
   <Language>en_US</Language>
@@ -14,7 +14,9 @@
   <Eol index="0"/>
   <Sources>
     <Source>OLTv1_1.py</Source>
+    <Source>Ui_OLT.py</Source>
     <Source>Ui_OLTv1_1.py</Source>
+    <Source>Ui_OLTv1_2.py</Source>
     <Source>Ui_test.py</Source>
     <Source>__init__.py</Source>
     <Source>my_pic_rc.py</Source>
@@ -22,6 +24,7 @@
   <Forms>
     <Form>OLT.ui</Form>
     <Form>OLTv1_1.ui</Form>
+    <Form>OLTv1_2.ui</Form>
   </Forms>
   <Resources>
     <Resource>my_pic.qrc</Resource>

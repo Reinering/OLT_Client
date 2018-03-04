@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1524</width>
+    <width>1542</width>
     <height>710</height>
    </rect>
   </property>
@@ -39,7 +39,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="comboBox">
+               <widget class="QComboBox" name="comboBox_OLTFactory">
                 <property name="font">
                  <font>
                   <family>微软雅黑</family>
@@ -99,7 +99,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit">
+               <widget class="QLineEdit" name="lineEdit_IPAddr">
                 <property name="font">
                  <font>
                   <family>微软雅黑</family>
@@ -149,7 +149,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="comboBox_2">
+               <widget class="QComboBox" name="comboBox_OLTType">
                 <property name="font">
                  <font>
                   <family>微软雅黑</family>
@@ -202,7 +202,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="comboBox_3">
+               <widget class="QComboBox" name="comboBox_loginMethod">
                 <property name="font">
                  <font>
                   <family>微软雅黑</family>
@@ -386,8 +386,6 @@
             </layout>
            </item>
           </layout>
-          <zorder>radioButton_2</zorder>
-          <zorder>radioButton</zorder>
           <zorder></zorder>
           <zorder>radioButton</zorder>
          </widget>
@@ -412,7 +410,7 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="pushButton_login">
           <property name="font">
            <font>
             <family>微软雅黑</family>
@@ -425,7 +423,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="pushButton_exit">
           <property name="font">
            <font>
             <family>微软雅黑</family>
@@ -438,7 +436,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_3">
+         <widget class="QPushButton" name="pushButton_query">
           <property name="font">
            <font>
             <family>微软雅黑</family>
@@ -453,7 +451,7 @@
         <item>
          <layout class="QGridLayout" name="gridLayout">
           <item row="1" column="0">
-           <widget class="QPushButton" name="pushButton_4">
+           <widget class="QPushButton" name="pushButton_reg">
             <property name="font">
              <font>
               <family>微软雅黑</family>
@@ -466,7 +464,7 @@
            </widget>
           </item>
           <item row="3" column="0">
-           <widget class="QPushButton" name="pushButton_6">
+           <widget class="QPushButton" name="pushButton_addService">
             <property name="font">
              <font>
               <family>微软雅黑</family>
@@ -479,7 +477,7 @@
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QPushButton" name="pushButton_5">
+           <widget class="QPushButton" name="pushButton_unreg">
             <property name="font">
              <font>
               <family>微软雅黑</family>
