@@ -266,16 +266,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def on_pushButton_login_clicked(self):
         print("登录OLT")
-        self.textBrowser.append(self.oltInst.loginOLT(self.comboBox_OLTFactory.currentText(),
+        login_str = self.oltInst.loginOLT(self.comboBox_OLTFactory.currentText(),
                       self.comboBox_OLTType.currentText(),
                       self.comboBox_loginMethod.currentText(),
-                      self.lineEdit_IPAddr.text()))
+                      self.lineEdit_IPAddr.text(), self.lineEdit_oltUser.text(), self.lineEdit_oltPasswd.text())
+        print(login_str)
+        self.textBrowser.append(login_str)
 
 
     #点击退出OLT按钮
     @pyqtSlot()
     def on_pushButton_exit_clicked(self):
         self.oltInst.exitOLT()
+        exit_str = self.comboBox_OLTFactory.currentText() + "OLT, IP地址：" + self.lineEdit_IPAddr.text() + "已退出。"
+        print(exit_str)
+        self.textBrowser.append(exit_str)
 
     #点击查询ONU按钮
     @pyqtSlot()
