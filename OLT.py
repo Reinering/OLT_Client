@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import time
 import paramiko
 import paramiko.ssh_exception
 import subprocess
@@ -20,15 +20,32 @@ class SSHOLT(object):
     def close(self):
         self.client.close()
 
-class TelnetOLT(telnetlib.Telnet):
+class TelnetOLT(object):
 
-    def __int__(self, host, port):
-        self.__init__(host, port)
+    def __int__(self):
+        self.shell_prompts = ('#', '$', ':~$' )
 
-    def auth(self):
-        pass
+    def auth(self, host, port, usr, pwd):
+        print("开始登陆")
+        self.tl = telnetlib.Telnet(host, port, timeout=10)
+        self.tl.set_debuglevel(2)
+        print("正在加载文件，请稍等……");
+        time.sleep(5)
+        self.tl.read_all()
+        self.tl.read_until(b"\n")
+        self.tl.read_all()
+        self.tl.write(usr.encode("ascii") + '\r\n'.encode("ascii"))
+        self.tl.read_all()
+        self.tl.read_until(b"\n")
+        self.tl.read_all()
+        self.tl.write(pwd.encode("ascii") + '\r\n'.encode("ascii"))
+        print("登陆成功")
+        # self.read_until(b)
+
+
 
     def exec_cmd(self, cmd):
+
         pass
 
     def close(self):
@@ -46,7 +63,6 @@ class OLT(object):
         self.olt_PrintInfo = ""
         self.ssh_OLT = SSHOLT()
         self.telnet_OLT = TelnetOLT()
-        self.telnet_OLT
 
     # 获取链路状态
     def getLinkState(self,ip):
@@ -93,14 +109,24 @@ class OLT(object):
     def loginOLT(self, olt_fact, olt_type, login_method, olt_ipaddr, olt_user, olt_passwd):
         print(olt_fact, olt_type, login_method, olt_ipaddr)
         if self.getLinkState(olt_ipaddr) is False:
+
             if login_method == "Telnet":
-                pass
+                # try:
+                return_str = self.telnet_OLT.auth(olt_ipaddr, 23, olt_user, olt_passwd)
+                self.olt_LinkState = True
+                return (olt_fact + " OLT IP地址：" + olt_ipaddr + "Telnet 已登陆\n"
+                        + return_str)
+                # except Exception as e:
+                #     print("Telnet登陆错误：", e)
+                #     return "Telnet登录失败,请检查IP地址，用户名密码是否正确，确认无误后请重新登录"
+
             elif login_method == "SSH2":
                 try:
                     self.ssh_OLT.auth(olt_ipaddr, 22, olt_user, olt_passwd)
                     self.olt_LinkState = True
                     return olt_fact + " OLT IP地址：" + olt_ipaddr + "SSH2 已登陆"
                 except Exception as e:
+                    print("SSH2登陆错误：", e)
                     self.olt_LinkState = False
                     return "SSH2登录失败,请检查IP地址，用户名密码是否正确，确认无误后请重新登录"
 
