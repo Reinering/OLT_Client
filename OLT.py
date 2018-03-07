@@ -27,29 +27,21 @@ class TelnetOLT(object):
 
     def auth(self, host, port, usr, pwd):
         print("开始登陆")
-        self.tl = telnetlib.Telnet(host, port, timeout=10)
+        self.tl = telnetlib.Telnet(host, port)
         self.tl.set_debuglevel(2)
         print("正在加载文件，请稍等……");
-        time.sleep(5)
-        self.tl.read_all()
+        time.sleep(0.5)
         self.tl.read_until(b"\n")
-        self.tl.read_all()
         self.tl.write(usr.encode("ascii") + '\r\n'.encode("ascii"))
-        self.tl.read_all()
         self.tl.read_until(b"\n")
-        self.tl.read_all()
         self.tl.write(pwd.encode("ascii") + '\r\n'.encode("ascii"))
         print("登陆成功")
-        # self.read_until(b)
-
-
 
     def exec_cmd(self, cmd):
+            pass
 
-        pass
-
-    def close(self):
-        pass
+    def close(self, cmd):
+        self.tl.write(cmd.encode("ascii"))
 
 
 class OLT(object):
@@ -63,6 +55,7 @@ class OLT(object):
         self.olt_PrintInfo = ""
         self.ssh_OLT = SSHOLT()
         self.telnet_OLT = TelnetOLT()
+        self.finish_cmd = ""
 
     # 获取链路状态
     def getLinkState(self,ip):
@@ -114,8 +107,7 @@ class OLT(object):
                 # try:
                 return_str = self.telnet_OLT.auth(olt_ipaddr, 23, olt_user, olt_passwd)
                 self.olt_LinkState = True
-                return (olt_fact + " OLT IP地址：" + olt_ipaddr + "Telnet 已登陆\n"
-                        + return_str)
+                return (olt_fact + " OLT IP地址：" + olt_ipaddr + " Telnet 已登陆\n")
                 # except Exception as e:
                 #     print("Telnet登陆错误：", e)
                 #     return "Telnet登录失败,请检查IP地址，用户名密码是否正确，确认无误后请重新登录"
@@ -124,7 +116,7 @@ class OLT(object):
                 try:
                     self.ssh_OLT.auth(olt_ipaddr, 22, olt_user, olt_passwd)
                     self.olt_LinkState = True
-                    return olt_fact + " OLT IP地址：" + olt_ipaddr + "SSH2 已登陆"
+                    return olt_fact + " OLT IP地址：" + olt_ipaddr + " SSH2 已登陆"
                 except Exception as e:
                     print("SSH2登陆错误：", e)
                     self.olt_LinkState = False
@@ -142,13 +134,34 @@ class OLT(object):
 
     # 退出OLT
     def exitOLT(self):
-        print("退出")
         if self.olt_LinkState:
-            self.ssh_OLT.close()
+            if self.olt_Fact  == "FiberHome":
+                self.finish_cmd = "quit"
+            elif self.olt_Fact == "ZTE":
+                self.finish_cmd = "exit"
+            elif self.olt_Fact == "HuaWei":
+                self.finish_cmd = "quit"
+            elif self.olt_Fact == "Bell":
+                pass
+            else:
+                print("OLT厂家类型错误。")
 
-    # 查询ONU
+            if self.login_Method == "SSH2":
+                self.ssh_OLT.exec_cmd(self.finish_cmd)
+                self.ssh_OLT.close()
+            elif self.login_Method == "Telnet":
+                self.telnet_OLT.close(self.finish_cmd + "\n")
+            print("成功退出")
+        else:
+            print(self.login_Method + "未登陆，无需退出")
+
+
+# 查询ONU
     def queryONU(self):
-        print("查询ONU")
+        if self.olt_LinkState:
+            pass
+        else:
+            print(self.login_Method + "未登陆，请重新登陆后查询")
 
     # 注册ONU
     def regONU(self):

@@ -278,7 +278,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def on_pushButton_exit_clicked(self):
         self.oltInst.exitOLT()
-        exit_str = self.comboBox_OLTFactory.currentText() + "OLT, IP地址：" + self.lineEdit_IPAddr.text() + "已退出。"
+        exit_str = self.comboBox_OLTFactory.currentText() + " OLT, IP地址：" + self.lineEdit_IPAddr.text() + " " + self.comboBox_loginMethod.currentText()+ " 已退出。"
         print(exit_str)
         self.textBrowser.append(exit_str)
 
