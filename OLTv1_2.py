@@ -265,11 +265,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #点击登录OLT按钮
     @pyqtSlot()
     def on_pushButton_login_clicked(self):
+        login_str = ""
         print("登录OLT")
-        login_str = self.oltInst.loginOLT(self.comboBox_OLTFactory.currentText(),
-                      self.comboBox_OLTType.currentText(),
-                      self.comboBox_loginMethod.currentText(),
-                      self.lineEdit_IPAddr.text(), self.lineEdit_oltUser.text(), self.lineEdit_oltPasswd.text())
+        #olt_fact, olt_type, login_method, olt_ipaddr, olt_user, olt_passwd
+        if self.comboBox_OLTFactory.currentText() == "FiberHome":
+            self.oltInst = OLT.FH_OLT(self.comboBox_OLTFactory.currentText(), self.comboBox_OLTType.currentText(), self.comboBox_loginMethod.currentText(), self.lineEdit_IPAddr.text(), self.lineEdit_oltUser.text(), self.lineEdit_oltPasswd.text())
+
+
+        elif self.comboBox_OLTFactory.currentText() == "ZTE":
+            self.oltInst = OLT.ZTE_OLT(self.comboBox_OLTFactory.currentText(), self.comboBox_OLTType.currentText(),
+                                      self.comboBox_loginMethod.currentText(), self.lineEdit_IPAddr.text(),
+                                      self.lineEdit_oltUser.text(), self.lineEdit_oltPasswd.text())
+        elif self.comboBox_OLTFactory.currentText() == "HuaWei":
+            self.oltInst = OLT.HW_OLT(self.comboBox_OLTFactory.currentText(), self.comboBox_OLTType.currentText(),
+                                      self.comboBox_loginMethod.currentText(), self.lineEdit_IPAddr.text(),
+                                      self.lineEdit_oltUser.text(), self.lineEdit_oltPasswd.text())
+        elif self.comboBox_OLTFactory.currentText() == "Bell":
+            pass
+        else:
+            print("OLT厂家类型读取错误。")
+        login_str = self.oltInst.loginOLT()
         print(login_str)
         self.textBrowser.append(login_str)
 
