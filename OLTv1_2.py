@@ -27,7 +27,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._translate = QtCore.QCoreApplication.translate
         self.on_pushButton_service_num = 2
         self.horizontalLayout_count = 1
-        self.oltInst = OLT.OLT()
+        self.oltInst = OLT.GEPON_OLT()
+        self.horizontalLayout_onu = []
 
 
     #删除业务控件
@@ -67,7 +68,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         # TODO: not implemented yet
         #raise NotImplementedError
-        
+
         print("on_pushButton_add_1_clicked")
         print("on_pushButton_add_num: ", self.horizontalLayout_count)
         horizontalLayout_service = []
@@ -272,16 +273,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.oltInst = OLT.FH_OLT(self.comboBox_OLTFactory.currentText(), self.comboBox_OLTType.currentText(), self.comboBox_loginMethod.currentText(), self.lineEdit_IPAddr.text(), self.lineEdit_oltUser.text(), self.lineEdit_oltPasswd.text())
 
 
-        elif self.comboBox_OLTFactory.currentText() == "ZTE":
-            self.oltInst = OLT.ZTE_OLT(self.comboBox_OLTFactory.currentText(), self.comboBox_OLTType.currentText(),
-                                      self.comboBox_loginMethod.currentText(), self.lineEdit_IPAddr.text(),
-                                      self.lineEdit_oltUser.text(), self.lineEdit_oltPasswd.text())
-        elif self.comboBox_OLTFactory.currentText() == "HuaWei":
-            self.oltInst = OLT.HW_OLT(self.comboBox_OLTFactory.currentText(), self.comboBox_OLTType.currentText(),
-                                      self.comboBox_loginMethod.currentText(), self.lineEdit_IPAddr.text(),
-                                      self.lineEdit_oltUser.text(), self.lineEdit_oltPasswd.text())
-        elif self.comboBox_OLTFactory.currentText() == "Bell":
-            pass
+        # elif self.comboBox_OLTFactory.currentText() == "ZTE":
+        #     self.oltInst = OLT.ZTE_OLT(self.comboBox_OLTFactory.currentText(), self.comboBox_OLTType.currentText(),
+        #                               self.comboBox_loginMethod.currentText(), self.lineEdit_IPAddr.text(),
+        #                               self.lineEdit_oltUser.text(), self.lineEdit_oltPasswd.text())
+        # elif self.comboBox_OLTFactory.currentText() == "HuaWei":
+        #     self.oltInst = OLT.HW_OLT(self.comboBox_OLTFactory.currentText(), self.comboBox_OLTType.currentText(),
+        #                               self.comboBox_loginMethod.currentText(), self.lineEdit_IPAddr.text(),
+        #                               self.lineEdit_oltUser.text(), self.lineEdit_oltPasswd.text())
+        # elif self.comboBox_OLTFactory.currentText() == "Bell":
+        #     pass
         else:
             print("OLT厂家类型读取错误。")
         login_str = self.oltInst.loginOLT()
@@ -300,7 +301,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #点击查询ONU按钮
     @pyqtSlot()
     def on_pushButton_query_clicked(self):
+        print("点击查询按钮")
         self.oltInst.queryONU()
+        onu_num = 5
+        self.display_onu(onu_num)
 
     #点击ONU注册按钮
     @pyqtSlot()
@@ -316,6 +320,41 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_pushButton_addService_clicked(self):
         self.oltInst.addService()
 
+    def display_onu(self, onu_num):
+        if not self.horizontalLayout_onu:
+            print("self.horizontalLayout_onu is null")
+            for i in self.horizontalLayout_onu:
+                pass
+        for j in range(1, onu_num+1):
+            self._horizontalLayout_onu = QtWidgets.QHBoxLayout()
+            self._horizontalLayout_onu.setObjectName("horizontalLayout_onu_" + str(j))
+            self._label_onu = QtWidgets.QLabel(self.widget_onu)
+            font = QtGui.QFont()
+            font.setFamily("微软雅黑")
+            font.setPointSize(12)
+            self._label_onu.setFont(font)
+            self._label_onu.setObjectName("label_onu_" + str(j))
+            self._label_onu.setText(self._translate("MainWindow", "QQQQQQQQQQQQQQQQQQQQ"))
+            self._horizontalLayout_onu.addWidget(self._label_onu)
+            spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+            self._horizontalLayout_onu.addItem(spacerItem)
+            self._checkBox_onu = QtWidgets.QCheckBox(self.widget_onu)
+            self._checkBox_onu.setText("")
+            self._checkBox_onu.setObjectName("checkBox_onu_" + str(j))
+            self._horizontalLayout_onu.addWidget(self._checkBox_onu)
+            self.verticalLayout_onu.addLayout(self._horizontalLayout_onu)
+            self.horizontalLayout_onu.append(self._horizontalLayout_onu)
+
+        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_onu.addItem(spacerItem2)
+
+
+
+
+
+
+
+
 
 import sys
 if __name__ == "__main__":
@@ -323,5 +362,3 @@ if __name__ == "__main__":
     ui = MainWindow()
     ui.show()
     sys.exit(app.exec_())
-    
-
