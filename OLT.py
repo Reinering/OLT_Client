@@ -103,7 +103,7 @@ class GEPON_OLT(object):
     def queryONU(self):
         pass
     # 注册ONU
-    def regONU(self):
+    def regONU(self, SN):
         pass
     #去注册ONU
     def unRegONU(self):
@@ -169,15 +169,10 @@ class FH_OLT(GEPON_OLT):
             self.telnet_OLT.close("exit" + "\n")
         return ("成功退出")
 
-    def queryONU(self):
+    def regONU(self, SN):
         if self.olt_LinkState == False:
-            return(self.login_Method + "未登陆，请重新登陆后查询")
-        return ""
-
-    def regONU(self):
-        if self.olt_LinkState == False:
-            return(self.login_Method + "未登陆，请重新登陆后注册")
-        return ""
+            return("OLT未登陆，请重新登陆后注册")
+        return SN
 
     def unRegONU(self):
         pass

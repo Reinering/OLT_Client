@@ -11,41 +11,62 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(386, 425)
         self.centralWidget = QtWidgets.QWidget(MainWindow)
         self.centralWidget.setObjectName("centralWidget")
         self.scrollArea = QtWidgets.QScrollArea(self.centralWidget)
-        self.scrollArea.setGeometry(QtCore.QRect(180, 120, 351, 401))
+        self.scrollArea.setGeometry(QtCore.QRect(9, 9, 364, 401))
+        self.scrollArea.setMinimumSize(QtCore.QSize(351, 401))
+        self.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 349, 399))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 345, 399))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.widget = QtWidgets.QWidget(self.scrollAreaWidgetContents)
-        self.widget.setGeometry(QtCore.QRect(10, 0, 329, 391))
-        self.widget.setObjectName("widget")
-        self.verticalLayout_onu = QtWidgets.QVBoxLayout(self.widget)
-        self.verticalLayout_onu.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_onu.setObjectName("verticalLayout_onu")
-        self.horizontalLayout_onu_1 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_onu_1.setObjectName("horizontalLayout_onu_1")
-        self.label_onu_1 = QtWidgets.QLabel(self.widget)
-        font = QtGui.QFont()
-        font.setFamily("微软雅黑")
-        font.setPointSize(12)
-        self.label_onu_1.setFont(font)
-        self.label_onu_1.setObjectName("label_onu_1")
-        self.horizontalLayout_onu_1.addWidget(self.label_onu_1)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_onu_1.addItem(spacerItem)
-        self.checkBox_onu_1 = QtWidgets.QCheckBox(self.widget)
-        self.checkBox_onu_1.setText("")
-        self.checkBox_onu_1.setObjectName("checkBox_onu_1")
-        self.horizontalLayout_onu_1.addWidget(self.checkBox_onu_1)
-        self.verticalLayout_onu.addLayout(self.horizontalLayout_onu_1)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_onu.addItem(spacerItem1)
+        self.pushButton = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.pushButton.setGeometry(QtCore.QRect(220, 100, 75, 23))
+        self.pushButton.setObjectName("pushButton")
+        self.textEdit = QtWidgets.QTextEdit(self.scrollAreaWidgetContents)
+        self.textEdit.setGeometry(QtCore.QRect(80, 190, 211, 331))
+        self.textEdit.setObjectName("textEdit")
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+
+        aux = QtWidgets.QWidget(self.scrollAreaWidgetContents)
+        aux.setFixedSize(10,10)
+        aux.setStyleSheet("""background: red;""")
+
+        aux2 = QtWidgets.QWidget(self.scrollAreaWidgetContents)
+        aux2.setFixedSize(20, 20)
+        aux2.setStyleSheet("""background: blue;""")
+
+        aux3 = QtWidgets.QWidget(self.scrollAreaWidgetContents)
+        aux3.setFixedSize(15, 15)
+        aux3.setStyleSheet("""background: yellow;""")
+
+        aux4 = QtWidgets.QWidget(self.scrollAreaWidgetContents)
+        aux4.setFixedSize(50,50)
+        aux4.setStyleSheet("""background: rgb(0,255,0,30%);""")
+
+        aux5 = QtWidgets.QWidget(self.scrollAreaWidgetContents)
+        aux5.setFixedSize(40, 40)
+        aux5.setStyleSheet("""background: green;""")
+
+        aux6 = QtWidgets.QWidget(self.scrollAreaWidgetContents)
+        aux6.setFixedSize(40, 40)
+        aux6.setStyleSheet("""background: green;""")
+        
+        self.v_layout_container = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.v_layout_container.setSpacing(100)
+        self.v_layout_container.addWidget(aux)
+        self.v_layout_container.addWidget(aux2)
+        self.v_layout_container.addWidget(aux3)
+        self.v_layout_container.addWidget(aux4)
+        self.v_layout_container.addWidget(aux5)
+        self.v_layout_container.addWidget(aux6)
+
+
+
         MainWindow.setCentralWidget(self.centralWidget)
 
         self.retranslateUi(MainWindow)
@@ -54,7 +75,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label_onu_1.setText(_translate("MainWindow", "QQQQQQQQQQQQQQQQQQQQ"))
+        self.pushButton.setText(_translate("MainWindow", "PushButton"))
 
 
 if __name__ == "__main__":

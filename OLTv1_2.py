@@ -28,7 +28,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.on_pushButton_service_num = 2
         self.horizontalLayout_count = 1
         self.oltInst = OLT.GEPON_OLT()
-        self.horizontalLayout_onu = []
+
+        self.horizontalLayout_onu_two = []
+        self.verticalLayout_onu = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout_onu.setObjectName("verticalLayout_onu")
+        self.scrollAreaWidgetContents.setLayout(self.verticalLayout_onu)
+        self.spacerItem_onu = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+
 
 
     #删除业务控件
@@ -54,11 +60,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 horizontalLayout_service[0].setParent(None)
                 self.verticalLayout_service_1.removeItem(horizontalLayout_service[0])
                 self.horizontalLayout_count -= 1
+
+                del horizontalLayout_service
             except Exception as e:
                 print(e)
                 print("删除业务配置\"horizontalLayout_service\"失败")
 
-        print(horizontalLayout_service)
+        # print(horizontalLayout_service)
 
     #添加业务控件
     @pyqtSlot()
@@ -69,8 +77,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # TODO: not implemented yet
         #raise NotImplementedError
 
-        print("on_pushButton_add_1_clicked")
-        print("on_pushButton_add_num: ", self.horizontalLayout_count)
+        # print("on_pushButton_add_1_clicked")
+        # print("on_pushButton_add_num: ", self.horizontalLayout_count)
         horizontalLayout_service = []
         i = self.on_pushButton_service_num
         if 1 <= self.horizontalLayout_count and self.horizontalLayout_count <= 7 :
@@ -302,8 +310,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def on_pushButton_query_clicked(self):
         print("点击查询按钮")
+        if (self.radioButton_unreg.isChecked()):
+            #查询自动发现未注册的ONU
+            self.oltInst.unRegONU()
+        elif self.radioButton_reg.isChecked():
+            # 查询已注册的ONU
+            self.oltInst.regONU(self.lineEdit_SN.text())
+        else:
+            print("radioButton未选中")
+            self.textBrowser.setText("请选择“查看未注册ONU”或“已注册ONU”")
+
+        # 自动发现未注册的ONU
         self.oltInst.queryONU()
-        onu_num = 5
+        onu_num = 30
         self.display_onu(onu_num)
 
     #点击ONU注册按钮
@@ -320,40 +339,50 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_pushButton_addService_clicked(self):
         self.oltInst.addService()
 
+    #根据查询按钮显示ONU列表
     def display_onu(self, onu_num):
-        if not self.horizontalLayout_onu:
-            print("self.horizontalLayout_onu is null")
-            for i in self.horizontalLayout_onu:
-                pass
+        if self.horizontalLayout_onu_two:
+            print("self.horizontalLayout_onu_two is not null")
+            for n in range(len(self.horizontalLayout_onu_two)-1, -1, -1):
+                print(len(self.horizontalLayout_onu_two[n]))
+                for i in range(len(self.horizontalLayout_onu_two[n])-1, 0, -1):
+                    print(i)
+                    if i != 2:
+                        self.horizontalLayout_onu_two[n][i].setParent(None)
+                        self.horizontalLayout_onu_two[n][0].removeWidget(self.horizontalLayout_onu_two[n][i])
+                    else:
+                        self.horizontalLayout_onu_two[n][0].removeItem(self.horizontalLayout_onu_two[n][i])
+                    self.horizontalLayout_onu_two[n][0].setParent(None)
+                self.verticalLayout_onu.removeItem(self.horizontalLayout_onu_two[n][0])
+                self.horizontalLayout_onu_two.remove(self.horizontalLayout_onu_two[n])
+            self.verticalLayout_onu.removeItem(self.spacerItem_onu)
+            # return "不再创建新的控件"
         for j in range(1, onu_num+1):
-            self._horizontalLayout_onu = QtWidgets.QHBoxLayout()
+            self.horizontalLayout_onu = []
+            self._horizontalLayout_onu = QtWidgets.QHBoxLayout(self.scrollAreaWidgetContents)
             self._horizontalLayout_onu.setObjectName("horizontalLayout_onu_" + str(j))
-            self._label_onu = QtWidgets.QLabel(self.widget_onu)
+            self.horizontalLayout_onu.append(self._horizontalLayout_onu)
+            self._label_onu = QtWidgets.QLabel(self.scrollAreaWidgetContents)
             font = QtGui.QFont()
             font.setFamily("微软雅黑")
-            font.setPointSize(12)
+            font.setPointSize(10)
             self._label_onu.setFont(font)
             self._label_onu.setObjectName("label_onu_" + str(j))
             self._label_onu.setText(self._translate("MainWindow", "QQQQQQQQQQQQQQQQQQQQ"))
             self._horizontalLayout_onu.addWidget(self._label_onu)
+            self.horizontalLayout_onu.append(self._label_onu)
             spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
             self._horizontalLayout_onu.addItem(spacerItem)
-            self._checkBox_onu = QtWidgets.QCheckBox(self.widget_onu)
+            self.horizontalLayout_onu.append(spacerItem)
+            self._checkBox_onu = QtWidgets.QCheckBox(self.scrollAreaWidgetContents)
             self._checkBox_onu.setText("")
             self._checkBox_onu.setObjectName("checkBox_onu_" + str(j))
             self._horizontalLayout_onu.addWidget(self._checkBox_onu)
+            self.horizontalLayout_onu.append(self._checkBox_onu)
             self.verticalLayout_onu.addLayout(self._horizontalLayout_onu)
-            self.horizontalLayout_onu.append(self._horizontalLayout_onu)
-
-        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_onu.addItem(spacerItem2)
-
-
-
-
-
-
-
+            self.horizontalLayout_onu_two.append(self.horizontalLayout_onu)
+        print("被执行了")
+        self.verticalLayout_onu.addItem(self.spacerItem_onu)
 
 
 import sys
