@@ -29,13 +29,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.horizontalLayout_count = 1
         self.oltInst = OLT.GEPON_OLT()
 
-        self.horizontalLayout_onu_two = []
-        self.verticalLayout_onu = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
-        self.verticalLayout_onu.setObjectName("verticalLayout_onu")
-        self.scrollAreaWidgetContents.setLayout(self.verticalLayout_onu)
-        self.spacerItem_onu = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        # self.horizontalLayout_onu_two = []
+        # self.verticalLayout_onu = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
+        # self.verticalLayout_onu.setObjectName("verticalLayout_onu")
+        # self.scrollAreaWidgetContents.setLayout(self.verticalLayout_onu)
+        # self.spacerItem_onu = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
 
-
+        self.tableWidget_onu.setColumnWidth(0, 20)
+        self.tableWidget_onu.setColumnWidth(1, 140)
+        self.tableWidget_onu.setColumnWidth(2, 55)
+        self.tableWidget_onu.setColumnWidth(3, 50)
+        # self.tableWidget_onu.setRowCount(0)
+        self.checkBox_onu_all = QtWidgets.QCheckBox(self.tableWidget_onu)
+        self.checkBox_onu_all.setText("")
+        self.checkBox_onu_all.setChecked(False)
+        self.checkBox_onu_all.setObjectName("checkBox_onu_all")
+        self.tableWidget_onu.setCellWidget(0, 0, self.checkBox_onu_all)
+        self.tableWidget_onu
 
     #删除业务控件
     def on_pushButton_sub_clicked(self, horizontalLayout_service):
@@ -322,7 +332,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # 自动发现未注册的ONU
         self.oltInst.queryONU()
-        onu_num = 30
+        onu_num = 20
         self.display_onu(onu_num)
 
     #点击ONU注册按钮
@@ -341,48 +351,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     #根据查询按钮显示ONU列表
     def display_onu(self, onu_num):
-        if self.horizontalLayout_onu_two:
-            print("self.horizontalLayout_onu_two is not null")
-            for n in range(len(self.horizontalLayout_onu_two)-1, -1, -1):
-                print(len(self.horizontalLayout_onu_two[n]))
-                for i in range(len(self.horizontalLayout_onu_two[n])-1, 0, -1):
-                    print(i)
-                    if i != 2:
-                        self.horizontalLayout_onu_two[n][i].setParent(None)
-                        self.horizontalLayout_onu_two[n][0].removeWidget(self.horizontalLayout_onu_two[n][i])
-                    else:
-                        self.horizontalLayout_onu_two[n][0].removeItem(self.horizontalLayout_onu_two[n][i])
-                    self.horizontalLayout_onu_two[n][0].setParent(None)
-                self.verticalLayout_onu.removeItem(self.horizontalLayout_onu_two[n][0])
-                self.horizontalLayout_onu_two.remove(self.horizontalLayout_onu_two[n])
-            self.verticalLayout_onu.removeItem(self.spacerItem_onu)
-            # return "不再创建新的控件"
-        for j in range(1, onu_num+1):
-            self.horizontalLayout_onu = []
-            self._horizontalLayout_onu = QtWidgets.QHBoxLayout(self.scrollAreaWidgetContents)
-            self._horizontalLayout_onu.setObjectName("horizontalLayout_onu_" + str(j))
-            self.horizontalLayout_onu.append(self._horizontalLayout_onu)
-            self._label_onu = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-            font = QtGui.QFont()
-            font.setFamily("微软雅黑")
-            font.setPointSize(10)
-            self._label_onu.setFont(font)
-            self._label_onu.setObjectName("label_onu_" + str(j))
-            self._label_onu.setText(self._translate("MainWindow", "QQQQQQQQQQQQQQQQQQQQ"))
-            self._horizontalLayout_onu.addWidget(self._label_onu)
-            self.horizontalLayout_onu.append(self._label_onu)
-            spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-            self._horizontalLayout_onu.addItem(spacerItem)
-            self.horizontalLayout_onu.append(spacerItem)
-            self._checkBox_onu = QtWidgets.QCheckBox(self.scrollAreaWidgetContents)
-            self._checkBox_onu.setText("")
-            self._checkBox_onu.setObjectName("checkBox_onu_" + str(j))
-            self._horizontalLayout_onu.addWidget(self._checkBox_onu)
-            self.horizontalLayout_onu.append(self._checkBox_onu)
-            self.verticalLayout_onu.addLayout(self._horizontalLayout_onu)
-            self.horizontalLayout_onu_two.append(self.horizontalLayout_onu)
-        print("被执行了")
-        self.verticalLayout_onu.addItem(self.spacerItem_onu)
+        rowCount = self.tableWidget_onu.rowCount()
+        for i in range(rowCount-1, -1, -1):
+            #清空表格
+            print("i:",i)
+            self.tableWidget_onu.removeRow(i)
+        #添加ONU列表
+        self.tableWidget_onu.setRowCount(onu_num)
+        for j in range(0, onu_num):
+            print("j:", j)
+
+
 
 
 import sys

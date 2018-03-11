@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-6.0.dtd">
 <!-- eric project file for project OLT -->
-<!-- Saved: 2018-03-04, 23:53:00 -->
+<!-- Saved: 2018-03-11, 23:05:10 -->
 <!-- Copyright (C) 2018 Reiner,  -->
 <Project version="6.0">
   <Language>en_US</Language>
@@ -26,6 +26,7 @@
     <Form>OLT.ui</Form>
     <Form>OLTv1_1.ui</Form>
     <Form>OLTv1_2.ui</Form>
+    <Form>testWindows.ui</Form>
   </Forms>
   <Resources>
     <Resource>my_pic.qrc</Resource>
