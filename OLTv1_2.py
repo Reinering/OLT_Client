@@ -6,6 +6,7 @@ Module implementing MainWindow.
 from PyQt5 import QtWidgets, QtGui,  QtCore
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QMainWindow
+from queue import Queue
 
 from Ui_OLTv1_2 import Ui_MainWindow
 import OLT
@@ -27,13 +28,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._translate = QtCore.QCoreApplication.translate
         self.on_pushButton_service_num = 2
         self.horizontalLayout_count = 1
+        self.logQueue = Queue()
         self.oltInst = OLT.GEPON_OLT()
-
-        # self.horizontalLayout_onu_two = []
-        # self.verticalLayout_onu = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
-        # self.verticalLayout_onu.setObjectName("verticalLayout_onu")
-        # self.scrollAreaWidgetContents.setLayout(self.verticalLayout_onu)
-        # self.spacerItem_onu = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
 
         self.tableWidget_onu.setColumnWidth(0, 20)
         self.tableWidget_onu.setColumnWidth(1, 140)
@@ -45,7 +41,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.checkBox_onu_all.setChecked(False)
         self.checkBox_onu_all.setObjectName("checkBox_onu_all")
         self.tableWidget_onu.setCellWidget(0, 0, self.checkBox_onu_all)
-        self.tableWidget_onu
+
+        self.tbT = TBThread(self.logQueue, self.textBrowser)
+        self.tbT.start()
 
     #删除业务控件
     def on_pushButton_sub_clicked(self, horizontalLayout_service):
@@ -77,7 +75,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print("删除业务配置\"horizontalLayout_service\"失败")
 
         # print(horizontalLayout_service)
-
     #添加业务控件
     @pyqtSlot()
     def on_pushButton_add_1_clicked(self):
@@ -184,6 +181,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             font = QtGui.QFont()
             font.setFamily("微软雅黑")
             font.setPointSize(12)
+            _lineEdit_svlan.setFont(font)
             _lineEdit_svlan.setObjectName("lineEdit_svlan_" + str(i))
             _horizontalLayout_service.addWidget(_lineEdit_svlan)
             #ServicePort水平布局中添加“CVLAN”
@@ -328,11 +326,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.oltInst.regONU(self.lineEdit_SN.text())
         else:
             print("radioButton未选中")
-            self.textBrowser.setText("请选择“查看未注册ONU”或“已注册ONU”")
+            self.logQueue.put("请选择“查看未注册ONU”或“已注册ONU”")
 
         # 自动发现未注册的ONU
         self.oltInst.queryONU()
-        onu_num = 20
+        onu_num = 30
         self.display_onu(onu_num)
 
     #点击ONU注册按钮
@@ -364,9 +362,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
+# textBrowser 打印
+class TBThread(QtCore.QThread):
+
+    def __init__(self, queue, textBrowser, parent=None):
+        super(TBThread, self).__init__(parent)
+        self.logQueue = queue
+        self.textBrowser = textBrowser
+        self.tbThreadStop = False
+
+    def run(self):
+        logStr = ""
+        while  not self.tbThreadStop:
+            self.textBrowser.append(logStr)
+            logStr = self.logQueue.get()
+
+    def stop(self):
+        self.tbThreadStop = True
+
 import sys
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
+    splash = QtWidgets.QSplashScreen(QtGui.QPixmap("pic/logo.jpg"))
+    splash.show()
     ui = MainWindow()
     ui.show()
+    splash.finish(ui)
     sys.exit(app.exec_())
