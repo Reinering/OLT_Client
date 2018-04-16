@@ -1,25 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Tasks SYSTEM "Tasks-6.0.dtd">
 <!-- eric6 tasks file for project OLT -->
-<!-- Saved: 2018-04-09, 09:11:52 -->
+<!-- Saved: 2018-04-13, 13:00:17 -->
 <Tasks version="6.0">
   <ProjectScanFilter></ProjectScanFilter>
-  <Task priority="1" completed="False" type="1" uid="{8e04fce6-dc16-4f08-a67d-058d39580e86}">
+  <Task priority="1" completed="False" type="1" uid="{c70708e0-688d-4da5-a1f3-f709e0f8e0df}">
     <Summary>TODO: not implemented yet</Summary>
     <Description></Description>
-    <Created>2018-04-09, 08:47:24</Created>
+    <Created>2018-04-13, 09:39:58</Created>
     <Resource>
       <Filename>OLTv1_1.py</Filename>
       <Linenumber>68</Linenumber>
-    </Resource>
-  </Task>
-  <Task priority="1" completed="False" type="1" uid="{29a43407-4c08-4a77-ba99-d38c3436960e}">
-    <Summary>TODO: not implemented yet</Summary>
-    <Description></Description>
-    <Created>2018-04-09, 09:11:49</Created>
-    <Resource>
-      <Filename>OLTv1_2.py</Filename>
-      <Linenumber>84</Linenumber>
     </Resource>
   </Task>
 </Tasks>
