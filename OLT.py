@@ -308,7 +308,7 @@ class HW_OLT(GEPON_OLT):
             if self.olt_Type == "GPON":
                 self.telnet_OLT.exec_cmd("display ont autofind all \r\n")
                 msg = self.telnet_OLT.read_very_eager()
-                print("msg:", msg)
+                # print("msg:", msg)
             if "Failure: The automatically found ONTs do not exist" in msg:
                 self.logQueue.put(msg)
             elif not msg:
@@ -324,17 +324,46 @@ class HW_OLT(GEPON_OLT):
             self.olt_LinkState = False
             self.liveTh.stop()
             print("telnet连接中断")
-
+    #按照SN或MAC查询ONU信息
     def query_regONU(self, SN):
-        try:
-            if self.olt_Type == "GPON":
-                msg = self.telnet_OLT.exec_cmd("display ont info by-sn " + SN + "\r\n")
-                print(msg)
-        except Exception as e:
-            print(e)
-            self.olt_LinkState=False
-            self.liveTh.stop()
-            print("telnet连接中断")
+        def parseResult(msg):
+            result = []
+            onuSlot = re.findall(r'\d{1,2}/\d{1,2}/\d{1,2}', msg, flags=re.MULTILINE)[0]
+            tempId = re.findall(r'ONT-ID.*', msg, flags=re.MULTILINE)
+            tempSN = re.findall(r'SN .*', msg, flags=re.MULTILINE)
+            tempState = re.findall(r'Run state.*', msg, flags=re.MULTILINE)
+
+            onuId = ((tempId[0].split(':')[1])[1:])[:-1]
+            onuSN = (re.findall(r'\([\w-]*\)', tempSN[0], flags=re.MULTILINE)[0][1:])[:-1]
+            onuState = ((tempState[0].split(':')[1])[1:])[:-1]
+
+            # 生成result数组
+            temp = []
+            temp.append(onuSN)
+            temp.append(onuSlot)
+            temp.append(onuId)
+            temp.append(onuState)
+            result.append(temp)
+            return result          # 保持查询数据的一致性
+
+        if self.olt_Type == "GPON":
+            try:
+                self.telnet_OLT.exec_cmd("display ont info by-sn " + SN + "\r\n")
+                msg = self.telnet_OLT.read_very_eager()
+                if "The required ONT does not exist" in msg:
+                    self.logQueue.put("reg_Return")
+                    self.logQueue.put(None)
+                else:
+                    self.logQueue.put(msg)
+                    result = parseResult(msg)
+                    print("result", result)
+                    self.logQueue.put("reg_Return")
+                    self.logQueue.put(result)
+            except Exception as e:
+                print(e)
+                self.olt_LinkState=False
+                self.liveTh.stop()
+                print("telnet连接中断")
 
     def consoleView(self,view_prompt):
         if self.login_Method == "Telnet":
@@ -355,9 +384,15 @@ class liveThread(QtCore.QThread):
     def run(self):
         if self.login_Method == "Telnet":
             while self.stopBool:
-                self.telnet_OLT.exec_cmd("\r\n")
-                msg = self.telnet_OLT.read_until("#")
-                self.logQueue.put(msg)
+                try:
+                    self.telnet_OLT.exec_cmd("\r\n")
+                    msg = self.telnet_OLT.read_until("#")
+                    self.logQueue.put(msg)
+                except Exception as e:
+                    print(e)
+                    self.logQueue.put("console time out!")
+                    self.stopBool = False
+                    break
                 if "Configuration console time out, please retry to log on" in msg:
                     self.logQueue.put("console time out!")
                     self.stopBool = False

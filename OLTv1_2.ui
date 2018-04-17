@@ -486,7 +486,7 @@
               <number>1</number>
              </property>
              <property name="columnCount">
-              <number>4</number>
+              <number>5</number>
              </property>
              <row/>
              <column>
@@ -507,6 +507,11 @@
              <column>
               <property name="text">
                <string>ONU ID</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>State</string>
               </property>
              </column>
             </widget>

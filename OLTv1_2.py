@@ -29,15 +29,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._translate = QtCore.QCoreApplication.translate
 
         self.tableWidget_onu.setColumnWidth(0, 20)
-        self.tableWidget_onu.setColumnWidth(1, 160)
+        self.tableWidget_onu.setColumnWidth(1, 130)
         self.tableWidget_onu.setColumnWidth(2, 65)
         self.tableWidget_onu.setColumnWidth(3, 55)
+        self.tableWidget_onu.setColumnWidth(4, 50)
 
         self.on_pushButton_service_num = 2
         self.horizontalLayout_count = 1
         self.logQueue = Queue()
         self.cmdQueue = Queue()
-        self.resultQueue = Queue()
         self.login_tag = False
         self.onu_List = []
 
@@ -316,7 +316,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print("登录OLT")
         self.oltTh = oltThread(self.comboBox_OLTFactory.currentText(), self.comboBox_OLTType.currentText(),
                                       self.comboBox_loginMethod.currentText(), self.lineEdit_IPAddr.text(),
-                                      self.lineEdit_oltUser.text(), self.lineEdit_oltPasswd.text(), self.logQueue, self.cmdQueue, self.resultQueue)
+                                      self.lineEdit_oltUser.text(), self.lineEdit_oltPasswd.text(), self.logQueue, self.cmdQueue)
         self.oltTh.start()
         self.tbT = TBThread(self.textBrowser, self.logQueue)
         self.tbT.start()
@@ -377,9 +377,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.cmdQueue.put("addService")
 
     #根据查询按钮显示ONU列表
-    def display_onu(self, unregResult):
-        print("unregResult", unregResult)
-        onu_num = len(unregResult)
+    def display_onu(self, result):
+        print("unregResult", result)
+        onu_num = len(result)
         rowCount = self.tableWidget_onu.rowCount()
         for i in range(rowCount-1, -1, -1):
             #清空表格
@@ -388,7 +388,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tableWidget_onu.setRowCount(onu_num)
         for j in range(0, onu_num):
             # print("j:", j)
-            temp = unregResult[j]
+            temp = result[j]
             k = 0
             _checkBox_onu = QtWidgets.QCheckBox()
             _checkBox_onu.setText("")
@@ -403,7 +403,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.tableWidget_onu.setItem(j, k + 1, item)
                 k += 1
             temp.append(_checkBox_onu)
-        self.onu_List = unregResult
+        self.onu_List = result
 
     @pyqtSlot(bool)
     def on_radioButton_reg_clicked(self, checked):
@@ -422,7 +422,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 class oltThread(QtCore.QThread):
     sign_to_State = QtCore.pyqtSignal(bool)
 
-    def __init__(self, olt_fact, olt_type, login_method, olt_ipaddr, olt_user, olt_passwd, logqueue, cmdqueue, resultqueue, parent=None):
+    def __init__(self, olt_fact, olt_type, login_method, olt_ipaddr, olt_user, olt_passwd, logqueue, cmdqueue, parent=None):
         super(oltThread, self).__init__(parent)
         self.olt_fact = olt_fact
         self.olt_type = olt_type
@@ -432,7 +432,6 @@ class oltThread(QtCore.QThread):
         self.olt_passwd = olt_passwd
         self.logQueue = logqueue
         self.cmdQueue = cmdqueue
-        self.resultQueue = resultqueue
         self.oltInst = OLT.GEPON_OLT()
         self.stopBool = False
 
@@ -486,6 +485,7 @@ class oltThread(QtCore.QThread):
         print("OLTThread线程停止")
         self.stopBool = True
         self.oltInst.exitOLT()
+
     def parseCmdQuue(self):
         # print(self.cmdQueue.get())
         # print(self.cmdQueue.get())
@@ -515,9 +515,15 @@ class TBThread(QtCore.QThread):
             logStr = self.logQueue.get()
             if logStr == "console time out!":                      #OLT远程连接超时，传递"console time out!"
                 self.sign_timeout.emit(False)
-            elif logStr == "unreg_Return":
-                unregResult = self.logQueue.get()
-                self.sign_displayOnu.emit(unregResult)
+            elif logStr == "unreg_Return" or logStr == "reg_Return":
+                result = self.logQueue.get()
+                print("result", result)
+                if result != None:
+                    self.sign_displayOnu.emit(result)
+            # elif logStr == "reg_Return":
+            #     reg_Result = self.logQueue.get()
+            #     if reg_Result != None:
+            #         self.sign_displayOnu.emit(reg_Result)
             elif logStr != "\t" or logStr == "\n" and logStr == "":
                 self.textBrowser.append(logStr)
 
