@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+代码中从传递的参数中 slot中[-1]取得port口错误
+
+"""
+
 import time
 import paramiko
 import paramiko.ssh_exception
@@ -67,7 +72,6 @@ class TelnetOLT(object):
     def close(self, cmd):
         self.tl.write(cmd.encode("ascii"))
 
-
 class GEPON_OLT(object):
 
     def __init__(self):
@@ -131,11 +135,13 @@ class GEPON_OLT(object):
         pass
     def query_regONU(self, SN):
         pass
+    def query_pon(self, slotPort):
+        pass
     # 注册ONU
     def regONU(self, SN):
         pass
     #去注册ONU
-    def unRegONU(self):
+    def unRegONU(self, sn):
         pass
     #添加业务
     def addService(self):
@@ -147,7 +153,6 @@ class GEPON_OLT(object):
         pass
 
 class FH_OLT(GEPON_OLT):
-
 
     def __init__(self, olt_fact,olt_type,login_method,olt_ipaddr,olt_user,olt_passwd, queue):
         super(FH_OLT, self).__init__()
@@ -166,11 +171,11 @@ class FH_OLT(GEPON_OLT):
         if self.olt_LinkState:
             self.logQueue.put(self.login_Method + "未登陆，无需退出")
         if self.login_Method == "SSH2":
-            self.ssh_OLT.exec_cmd("exit\n")
+            self.ssh_OLT.exec_cmd("exit\r\n")
             self.ssh_OLT.close()
             self.logQueue.put("SSH2成功退出")
         elif self.login_Method == "Telnet":
-            self.telnet_OLT.close("exit" + "\n")
+            self.telnet_OLT.close("exit" + "\r\n")
             self.logQueue.put("Telnet成功退出")
     def regONU(self, SN):
         if self.olt_LinkState:
@@ -203,13 +208,11 @@ class ZTE_OLT(GEPON_OLT):
         self.olt_PrintInfo = ""
         self.logQueue = queue
 
-
 class HW_OLT(GEPON_OLT):
-
 
     def __init__(self, olt_fact,olt_type,login_method,olt_ipaddr,olt_user,olt_passwd, queue):
         super(HW_OLT, self).__init__()
-        self.dictOLT = {}
+        self.paraMap = {"吉视汇通-2ETH":["JSHTWG"], "吉视汇通-4ETH":["JSHTWG"], "山东滨州网关":[]}   # 各个型号ONU，注册需要的参数，依次为：线路模板，服务模板，
         self.olt_Fact = olt_fact
         self.olt_Type = olt_type
         self.login_Method = login_method
@@ -222,8 +225,6 @@ class HW_OLT(GEPON_OLT):
         self.liveTh = liveThread(self.login_Method, self.telnet_OLT, self.ssh_OLT, self.logQueue)
 
         self.telnet_prompt = [">>User name:", ">>User password:"]
-
-
 
     def loginOLT(self):
         if not self.getLinkState(self.olt_Ipaddr):
@@ -271,12 +272,15 @@ class HW_OLT(GEPON_OLT):
                 self.ssh_OLT.close()
                 self.logQueue.put("SSH2成功退出")
             elif self.login_Method == "Telnet":
-                self.telnet_OLT.close("exit \r\n")
+                self.telnet_OLT.close("quit\r\n")
+                msg = self.telnet_OLT.read_very_eager()
+                self.logQueue(msg)
+                self.telnet_OLT.close("y\r\n")
                 self.logQueue.put("Telnet成功退出")
         else:
             self.logQueue.put(self.login_Method + "未登陆，无需退出")
         self.olt_LinkState = False
-
+    #查询OLT自动发现的ONU
     def query_unRegONU(self):
         #解析查询ONU返回的结果
         def parseResult(msg):
@@ -289,19 +293,11 @@ class HW_OLT(GEPON_OLT):
             resultList = []
             while i < len(snList):
                 tmp = []
-                tmp.append(((snList[i])[1:])[:-1])
+                tmp.append((snList[i])[1:][:-1])
                 tmp.append(slotList[i])
                 resultList.append(tmp)
                 i += 1
             return resultList
-        #递归确认返回的结果是否已全部返回完成
-        def recMsg(msg):
-            if "More ( Press " in msg:
-                print("More ( Press存在")
-                self.telnet_OLT.exec_cmd(chr(32) + "\r\n")
-                tmp = self.telnet_OLT.read_very_eager()
-                msg += recMsg(tmp)
-            return msg
 
         msg = ""
         try:
@@ -314,7 +310,7 @@ class HW_OLT(GEPON_OLT):
             elif not msg:
                 pass
             else:
-                msg = recMsg(msg)
+                msg = self.recMsg(msg)
                 self.logQueue.put(msg)
                 result = parseResult(msg)
                 self.logQueue.put("unreg_Return")
@@ -333,9 +329,9 @@ class HW_OLT(GEPON_OLT):
             tempSN = re.findall(r'SN .*', msg, flags=re.MULTILINE)
             tempState = re.findall(r'Run state.*', msg, flags=re.MULTILINE)
 
-            onuId = ((tempId[0].split(':')[1])[1:])[:-1]
-            onuSN = (re.findall(r'\([\w-]*\)', tempSN[0], flags=re.MULTILINE)[0][1:])[:-1]
-            onuState = ((tempState[0].split(':')[1])[1:])[:-1]
+            onuId = (tempId[0].split(':')[1])[1:][:-1]
+            onuSN = re.findall(r'\([\w-]*\)', tempSN[0], flags=re.MULTILINE)[0][1:][:-1]
+            onuState = (tempState[0].split(':')[1])[1:][:-1]
 
             # 生成result数组
             temp = []
@@ -359,17 +355,256 @@ class HW_OLT(GEPON_OLT):
                     print("result", result)
                     self.logQueue.put("reg_Return")
                     self.logQueue.put(result)
+                msg = self.recMsg(msg)
+                self.logQueue.put(msg)
             except Exception as e:
                 print(e)
                 self.olt_LinkState=False
                 self.liveTh.stop()
                 print("telnet连接中断")
+    #查询PON口下所有ONU
+    def query_pon(self, slotPort):
+        def parseResult(msg):
+            result = []
+            onuSlot = re.findall(r'\d{1,2}/\d{1,2}/\d{1,2}', msg, flags=re.MULTILINE)[0]
+            tempId = re.findall(r'ONT-ID.*', msg, flags=re.MULTILINE)
+            tempSN = re.findall(r'SN .*', msg, flags=re.MULTILINE)
+            tempState = re.findall(r'Run state.*', msg, flags=re.MULTILINE)
+
+            onuId = (tempId[0].split(':')[1])[1:][:-1]
+            onuSN = re.findall(r'\([\w-]*\)', tempSN[0], flags=re.MULTILINE)[0][1:][:-1]
+            onuState = (tempState[0].split(':')[1])[1:][:-1]
+
+            # 生成result数组
+            temp = []
+            temp.append(onuSN)
+            temp.append(onuSlot)
+            temp.append(onuId)
+            temp.append(onuState)
+            result.append(temp)
+            return result          # 保持查询数据的一致性
+
+        frame, slot, port = slotPort[0].split('/')
+        if self.olt_Type == "GPON":
+            try:
+                self.telnet_OLT.exec_cmd("display ont info " + frame + ' ' + slot + ' ' + port + " all" + "\r\n")
+                msg = self.telnet_OLT.read_very_eager()
+                msg = self.recMsg(msg)
+                if "There is no ONT available" in msg:
+                    self.logQueue.put("ponreg_Return")
+                    self.logQueue.put(None)
+                else:
+                    self.logQueue.put(msg)
+                    result = parseResult(msg)
+                    print("result", result)
+                    self.logQueue.put("ponreg_Return")
+                    self.logQueue.put(result)
+            except Exception as e:
+                print(e)
+                self.olt_LinkState=False
+                self.liveTh.stop()
+                print("telnet连接中断")
+    #批量注册ONU
+    def regONU(self, onu_list):
+        # 解析查询ONU ID返回的结果
+        def parseResult(msg):
+            # 查询需要注册的ONU所在槽位的ONU ID
+            tempId = re.findall(r'ont add.*sn-auth', msg, flags=re.MULTILINE)
+            onuId = tempId[-1].split(" ")[3]
+            return onuId
+        if self.olt_Type == "GPON":
+            print(onu_list)
+            onuMap = onu_list.pop()
+            num = len(onu_list)
+            # 此段代码需要优化
+            for i in range(0, num, 1):
+                onuSlot = onu_list[i][1][:3]
+                port = onu_list[i][1][-1]
+                onuSN = onu_list[i][0]
+
+                if self.CheckONUreg(onuSN):
+                    self.unRegONU(onuSN)
+
+                self.telnet_OLT.exec_cmd("display current-configuration port " + onu_list[i][1] + "\r\n")
+                msg = self.telnet_OLT.read_very_eager()
+                msg = self.recMsg(msg)
+                self.logQueue.put(msg)
+                onuId = parseResult(msg)
+
+                # 进入config视图
+                self.telnet_OLT.exec_cmd("config\r\n")
+                msg = self.telnet_OLT.read_until('#')
+                self.logQueue.put(msg)
+                # 进入OLT单板视图
+                self.telnet_OLT.exec_cmd("interface gpon " + onuSlot + "\r\n")
+                msg = self.telnet_OLT.read_until('#')
+                self.logQueue.put(msg)
+                # 添加ONU
+                onuId = str(int(onuId) + 1)
+                addCmd = "ont add " + port + " " + onuId + " sn-auth " + onuSN + " omci "
+                try:
+                    linePro = onuMap["lineProName"]
+                except Exception as e:
+                    print(e)
+                    linePro = None
+                if linePro is not None:
+                    addCmd = addCmd + "ont-lineprofile-name " + linePro
+                else:
+                    try:
+                        linePro = onuMap["lineProId"]
+                    except Exception as e:
+                        print(e)
+                        self.logQueue.put("注册ONU所必需的线路模板配置错误，请推出程序，在根目录下config.xml中进行配置后，重新启动")
+                        break
+                    if linePro is not None:
+                        addCmd = addCmd + " ont-lineprofile-id " + linePro
+                    else:
+                        print("解析线路模板数据错误")
+                try:
+                    srvPro = onuMap["srvProName"]
+                except Exception as e:
+                    print(e)
+                    srvPro = None
+                if srvPro is not None:
+                    addCmd = addCmd + " ont-srvprofile-name " + srvPro + "\r\n"
+                else:
+                    try:
+                        srvPro = onuMap["lineProId"]
+                    except Exception as e:
+                        print(e)
+                        self.logQueue.put("注册ONU所必需的服务模板配置错误，请推出程序，在根目录下config.xml中进行配置后，重新启动")
+                        break
+                    if srvPro is not None:
+                        addCmd = addCmd + " ont-srvprofile-id " + srvPro + "\r\n"
+                    else:
+                        print("解析服务模板数据错误")
+                print("addCmd", addCmd)
+
+                self.telnet_OLT.exec_cmd(addCmd)
+                self.telnet_OLT.exec_cmd("\r\n")
+                msg = self.telnet_OLT.read_until('#')
+                # print("msg开始:", msg)
+                # print("msg停止")
+                self.logQueue.put(msg)
+                if "" in msg:
+                    pass
+                elif "Failure: The bandwidth is not enough" in msg:
+                    self.logQueue.put("注册失败： Failure: The bandwidth is not enough")
+                else:
+                    pass
+                for i in range(0, 2, 1):
+                    self.telnet_OLT.exec_cmd("quit\r\n")
+                    msg = self.telnet_OLT.read_until('#')
+                    self.logQueue.put(msg)
+
+    # 去注册
+    def unRegONU(self, onu_list):
+        def parseResult(msg):
+            frame, slot, port = (re.findall(r'\d{1,2}/\d{1,2}/\d{1,2}', msg, flags=re.MULTILINE)[0]).split('/')
+            tempId = re.findall(r'ONT-ID.*', msg, flags=re.MULTILINE)
+
+            onuId = (tempId[0].split(':')[1])[1:]                       #onuId = (tempId[0].split(':')[1])[1:][:-1]
+            return frame, slot, port, onuId
+
+        # def parser
+
+        if self.olt_Type == "GPON":
+            print(onu_list)
+            frame = ""
+            slot = ""
+            port = ""
+            onuId = ""
+            onuSN = ""
+            num = len(onu_list)
+            # 进入config视图
+            self.telnet_OLT.exec_cmd("config\r\n")
+            msg = self.telnet_OLT.read_until('#')
+            self.logQueue.put(msg)
+            for i in range(0, num, 1):
+                try:
+                    frame, slot, port = onu_list[i][1].split('/')
+                    onuId = onu_list[i][2]
+                    onuSN = onu_list[i][0]
+                except Exception as e:
+                    print(e)
+                    try:
+                        self.telnet_OLT.exec_cmd("display ont info by-sn " + onuSN + "\r\n")
+                        msg = self.telnet_OLT.read_very_eager()
+                        msg = self.recMsg(msg)
+                        self.logQueue.put(msg)
+                        if "The required ONT does not exist" in msg:
+                            self.logQueue.put("ONU SN：" + onuSN + "  不存在于此OLT，请核对后重新操作")
+                        else:
+                            frame, slot, port, onuId = parseResult(msg)
+                            self.logQueue.put("reg_Return")
+                    except Exception as e:
+                        print(e)
+                        self.olt_LinkState = False
+                        self.liveTh.stop()
+                        print("telnet连接中断")
+                # 进入OLT单板视图
+                self.telnet_OLT.exec_cmd("display service-port port " + frame + '/' + slot + '/' + port + " ont " + onuId)
+                msg = self.telnet_OLT.read_very_eager()
+                self.logQueue(msg)
+
+
+
+
+                # self.telnet_OLT.exec_cmd("interface gpon " + frame + "/" + slot + "\r\n")
+                # msg = self.telnet_OLT.read_until('#')
+                # self.logQueue.put(msg)
+                # self.telnet_OLT.exec_cmd("ont delete port " + port + " " + onuId + "\r\n")
+                # msg = self.telnet_OLT.read_very_eager()
+                # if "" in msg:
+                #     self.logQueue.put("ONU SN：" + onuSN + "  删除成功")
+                # elif "Failure: This configured object has some service virtual ports"  in msg:
+                #
+                #     self.logQueue.put("ONU SN：" + onuSN + "  删除失败")
+                # else:
+                #     pass
+                # self.telnet_OLT.exec_cmd("quit\r\n")
+                # msg = self.telnet_OLT.read_until('#')
+                # self.logQueue.put(msg)
+            self.telnet_OLT.exec_cmd("quit\r\n")
+            msg = self.telnet_OLT.read_until('#')
+            self.logQueue.put(msg)
+
+
+
+
+
+
+                # onuSN = onu_list[i][0]
 
     def consoleView(self,view_prompt):
         if self.login_Method == "Telnet":
             msg = self.telnet_OLT.exec_cmd(view_prompt)
             self.logQueue.put(msg)
         self.liveTh.start()
+    # 校验即将注册的ONU是否在于此OLT
+    def CheckONUreg(self, SN):
+        if self.olt_Type == "GPON":
+            try:
+                self.telnet_OLT.exec_cmd("display ont info by-sn " + SN + "\r\n")
+                msg = self.telnet_OLT.read_very_eager()
+                self.logQueue.put(msg)
+                if "The required ONT does not exist" in msg:
+                    return False
+                else:
+                    return True
+            except Exception as e:
+                print(e)
+                self.olt_LinkState=False
+                self.liveTh.stop()
+                print("telnet连接中断")
+    # 递归确认返回的结果是否已全部返回完成
+    def recMsg(self, msg):
+        if "More ( Press " in msg:
+            print("More ( Press存在")
+            self.telnet_OLT.exec_cmd(chr(32) + "\r\n")
+            tmp = self.telnet_OLT.read_very_eager()
+            msg += self.recMsg(tmp)
+        return msg
 
 class liveThread(QtCore.QThread):
 
@@ -401,6 +636,8 @@ class liveThread(QtCore.QThread):
 
     def stop(self):
         self.stopBool = False
+        if self.login_Method == "Telnet":
+            self.telnet_OLT.close
 
 
 

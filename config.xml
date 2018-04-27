@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- # 模板name 使用<lineProName>、<srvProName>、<traffProName>
+	   模板id 使用<lineProId>、<srvProId>、<traffProIndex>
+-->
+<config>
+	<OLT name="HuaWei">
+		<onuType name="吉视汇通-2ETH">
+			<lineProId>10</lineProId>
+			<srvProId>10</srvProId>
+			<dbaPro></dbaPro>
+			<traffPro></traffPro>
+		</onuType>
+		<onuType name="吉视汇通-4ETH">
+			<lineProName>JSHTWG</lineProName>
+			<srvProName>test</srvProName>
+			<dbaPro></dbaPro>	
+			<traffPro></traffPro>
+		</onuType>
+		<onuType name="滨州广电网关">
+			<linePro></linePro>
+			<srvPro></srvPro>
+			<dbaPro></dbaPro>
+			<traffPro></traffPro>
+		</onuType>
+		<onuType name="陕西广电网关">
+			<linePro></linePro>
+			<srvPro></srvPro>
+			<dbaPro></dbaPro>
+			<traffPro></traffPro>
+		</onuType>
+		<onuType name="临汾广电网关">
+			<linePro></linePro>
+			<srvPro></srvPro>
+			<dbaPro></dbaPro>
+			<traffPro></traffPro>
+		</onuType>
+		<onuType name="潍坊广电网关">
+			<linePro></linePro>
+			<srvPro></srvPro>
+			<dbaPro></dbaPro>
+			<traffPro></traffPro>
+		</onuType>
+		<onuType name="融合终端">
+			<linePro></linePro>
+			<srvPro></srvPro>
+			<dbaPro></dbaPro>
+			<traffPro></traffPro>
+		</onuType>
+	</OLT>
+	<OLT name="ZTE">
+	</OLT>
+	<OLT name="FiberHome">
+	</OLT>
+</config>
