@@ -189,17 +189,22 @@ MA5608T#display ont info 0 0 0 all
   In port 0/ 0/0 , the total of ONTs are: 6, online: 1
   -----------------------------------------------------------------------------
 """
+tempList = re.findall(r'0/ \d{1,2}/\d{1,2} *\d{1,3} *\w* *\w* *(?:offline|online)', msg, flags=re.MULTILINE)
+# tempList = iter([])
+#tempList = re.match(r'0/ \d{1,2}/\d{1,2} *\d{1,3} *\w* *\w* *(offline|online)', msg)
 
-tempList = re.findall(r'0/ [\d{1,2}/\d{1,2}] *\d{1,3} *\w*[ *\w*]{5}', msg, flags=re.MULTILINE)
+# pattern = re.compile(r'0/ \d{1,2}/\d{1,2} *\d{1,3} *\w* *\w* *(offline|online)')
+# tempList = pattern.match(msg)
 print(tempList)
-# for temp in tempList:
-#     tempL = temp.split(" ")
-#     print(tempL)
-#     l = []
-#     for i in tempL:
-#         # print(i)
-#         if i != '':
-#             l.append(i)
-#     tempL = l
-#
-#     print(tempL)
+for temp in tempList:
+    tempL = temp.split(" ")
+    print(tempL)
+    l = []
+    for i in tempL:
+        # print(i)
+        if i != '':
+            l.append(i)
+    tempL = l
+
+    print(tempL)
+

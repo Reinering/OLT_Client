@@ -694,7 +694,7 @@ class TBThread(QtCore.QThread):
             if logStr == "console time out!":                      #OLT远程连接超时，传递"console time out!"
                 print("检测到“console time out")
                 self.sign_timeout.emit(False)
-            elif logStr == "unreg_Return" or logStr == "reg_Return":
+            elif logStr == "unreg_Return" or logStr == "reg_Return" or logStr == "ponreg_Return":
                 result = self.logQueue.get()
                 if result != None:
                     self.sign_displayOnu.emit(result)

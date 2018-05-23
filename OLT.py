@@ -366,22 +366,19 @@ class HW_OLT(GEPON_OLT):
     def query_pon(self, slotPort):
         def parseResult(msg):
             result = []
-            onuSlot = re.findall(r'\d{1,2}/\d{1,2}/\d{1,2}', msg, flags=re.MULTILINE)[0]
-            tempId = re.findall(r'ONT-ID.*', msg, flags=re.MULTILINE)
-            tempSN = re.findall(r'SN .*', msg, flags=re.MULTILINE)
-            tempState = re.findall(r'Run state.*', msg, flags=re.MULTILINE)
-
-            onuId = (tempId[0].split(':')[1])[1:][:-1]
-            onuSN = re.findall(r'\([\w-]*\)', tempSN[0], flags=re.MULTILINE)[0][1:][:-1]
-            onuState = (tempState[0].split(':')[1])[1:][:-1]
-
-            # 生成result数组
-            temp = []
-            temp.append(onuSN)
-            temp.append(onuSlot)
-            temp.append(onuId)
-            temp.append(onuState)
-            result.append(temp)
+            tempList = re.findall(r'0/ \d{1,2}/\d{1,2} *\d{1,3} *\w* *\w* *(?:offline|online)', msg, flags=re.MULTILINE)
+            for temp in tempList:
+                tempL = temp.split(" ")
+                l = []
+                for i in tempL:
+                    if i != '':
+                        l.append(i)
+                tempL = []
+                tempL.append(l[3])
+                tempL.append(l[0] + l[1])
+                tempL.append(l[2])
+                tempL.append(l[-1])
+                result.append(tempL)
             return result          # 保持查询数据的一致性
 
         frame, slot, port = slotPort[0].split('/')
